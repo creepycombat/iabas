@@ -1,0 +1,7 @@
+{% extends "core/base.html" %}{% block title %}Privacidad{% endblock %}
+{% block content %}<div class="card" style="max-width:640px">
+<h1>Privacidad y consentimiento</h1>
+<p>Tu organización usa IABAS para medir y reducir el riesgo de phishing con simulaciones formativas, conforme a la Ley N.º 21.719. Puedes revocar tu consentimiento en cualquier momento.</p>
+{% if user.perfil.consentimiento_revocado %}<p><span class="tag warn">Consentimiento revocado</span> No recibirás nuevas simulaciones.</p>
+{% else %}<form method="post">{% csrf_token %}<button class="btn red">Revocar mi consentimiento</button></form>{% endif %}
+<p><a href="{% url 'bandeja' %}">← Volver a la bandeja</a></p></div>{% endblock %}

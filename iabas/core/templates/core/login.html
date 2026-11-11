@@ -1,0 +1,8 @@
+{% extends "core/base.html" %}{% block title %}Ingresar · IABAS{% endblock %}
+{% block content %}<div class="card" style="max-width:420px;margin:3rem auto">
+<h1>Ingresar a IABAS</h1>
+<form method="post">{% csrf_token %}
+{% if form.errors %}<div class="msg error">Usuario o contraseña incorrectos.</div>{% endif %}
+<p><label>Usuario<br><input type="text" name="username" autofocus required></label></p>
+<p><label>Contraseña<br><input type="password" name="password" required></label></p>
+<button class="btn">Ingresar</button></form></div>{% endblock %}

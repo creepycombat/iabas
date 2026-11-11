@@ -1,0 +1,25 @@
+{% extends "core/base.html" %}{% block title %}Reforzamiento{% endblock %}
+{% block content %}
+<div class="card">
+<h1>Esto era una simulación de phishing</h1>
+<p>El correo «{{ sim.campana.asunto }}», enviado por «{{ sim.campana.remitente }}», no era real. Lo preparó tu organización para entrenar la detección de engaños. Nadie vio tu contraseña: solo se registró que ingresaste al enlace.</p>
+<h2>Señales que podías detectar</h2>
+<ul>{% for s in senales %}<li>{{ s }}</li>{% endfor %}</ul>
+</div>
+
+{% if resultados %}
+<div class="card"><h1>Resultado: {{ aciertos }} de {{ total }} correctas</h1>
+{% for r in resultados %}<p><strong>{{ forloop.counter }}. {{ r.p.texto }}</strong><br>
+{% if r.ok %}<span class="tag ok">Correcta</span>{% else %}<span class="tag warn">Incorrecta</span>{% endif %}
+ {{ r.p.explicacion }}</p>{% endfor %}
+<a class="btn" href="{% url 'inicio' %}">Volver al inicio</a></div>
+{% elif ref.completado %}
+<div class="card"><p>Ya completaste este reforzamiento (nota: {{ ref.nota|floatformat:0 }} %). La evaluación se rinde una sola vez.</p>
+<a class="btn" href="{% url 'inicio' %}">Volver al inicio</a></div>
+{% else %}
+<form method="post" class="card">{% csrf_token %}<h2>Evaluación breve</h2>
+{% for i, p in preguntas %}<p><strong>{{ forloop.counter }}. {{ p.texto }}</strong></p>
+{% for o in p.opciones %}<label style="display:block;margin:.2rem 0 .2rem 1rem"><input type="radio" name="p{{ i }}" value="{{ forloop.counter0 }}" required> {{ o }}</label>{% endfor %}{% endfor %}
+<p><button class="btn">Enviar respuestas</button></p></form>
+{% endif %}
+{% endblock %}

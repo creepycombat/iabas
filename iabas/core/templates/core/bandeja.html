@@ -1,0 +1,12 @@
+{% extends "core/base.html" %}{% block title %}Bandeja de entrada{% endblock %}
+{% block content %}
+<h1>Bandeja de entrada</h1>
+<div class="card">
+{% for s in sims %}
+<a href="{% url 'correo' s.token %}" style="display:flex;gap:1rem;padding:.7rem 0;border-bottom:1px solid var(--line);text-decoration:none;color:inherit">
+<div style="min-width:210px"><strong>{{ s.campana.remitente|truncatechars:34 }}</strong></div>
+<div style="flex:1">{{ s.campana.asunto }}</div>
+<div class="mute small">{{ s.enviada|date:"d M H:i" }}</div></a>
+{% empty %}<p class="mute">No tienes correos nuevos.</p>{% endfor %}</div>
+<p class="small mute"><a href="{% url 'privacidad' %}">Privacidad y consentimiento</a></p>
+{% endblock %}

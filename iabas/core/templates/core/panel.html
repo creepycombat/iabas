@@ -1,0 +1,25 @@
+{% extends "core/base.html" %}{% block title %}Campañas · IABAS{% endblock %}
+{% block content %}
+<h1>Campañas de simulación</h1>
+<p class="mute">Una campaña solo puede ejecutarse con el consentimiento informado de la organización.
+<a href="/admin/core/campana/add/">Crear campaña</a> · <a href="/admin/">Usuarios y grupos</a></p>
+<div class="card"><table>
+<tr><th>Campaña</th><th>Consentimiento</th><th>Destinatarios</th><th>Clic</th><th>Reporte</th><th>Acción</th></tr>
+{% for f in filas %}<tr>
+<td><strong>{{ f.c.nombre }}</strong><br><span class="mute small">{{ f.c.asunto }}</span></td>
+<td>{% if f.c.consentimiento %}<span class="tag ok">Registrado {{ f.c.consentimiento.fecha|date:"d/m/Y" }}</span>
+{% else %}<span class="tag warn">Falta</span>{% endif %}</td>
+<td>{% if f.c.estado == "ejecutada" %}{{ f.n }} enviados{% else %}{{ f.destinatarios }} por enviar{% endif %}</td>
+<td>{% if f.clic != None %}{{ f.clic }} %{% else %}–{% endif %}</td>
+<td>{% if f.reporte != None %}{{ f.reporte }} %{% else %}–{% endif %}</td>
+<td>{% if f.c.estado == "ejecutada" %}<span class="tag">Ejecutada</span>
+{% else %}
+<form method="post" action="{% url 'ejecutar' f.c.pk %}">{% csrf_token %}<button class="btn">Ejecutar ahora</button></form>
+{% if not f.c.consentimiento %}
+<details style="margin-top:.5rem"><summary>Registrar consentimiento</summary>
+<form method="post" action="{% url 'consentimiento' f.c.pk %}">{% csrf_token %}
+<p><input type="text" name="organizacion" placeholder="Organización" value="Empresa Demo SpA"></p>
+<p class="small"><label><input type="checkbox" name="acepto"> La organización consiente la simulación de phishing con fines formativos (Ley 21.719).</label></p>
+<button class="btn sec">Guardar consentimiento</button></form></details>{% endif %}
+{% endif %}</td></tr>{% endfor %}</table></div>
+{% endblock %}
