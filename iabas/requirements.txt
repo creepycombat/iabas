@@ -1,0 +1,7 @@
+django
+streamlit
+pandas
+scikit-learn
+joblib
+plotly
+pytest
