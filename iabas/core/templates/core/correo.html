@@ -1,0 +1,22 @@
+{# ====================================================================== #}
+{# Archivo        : iabas/core/templates/core/correo.html #}
+{# Proyecto       : IABAS - Plataforma Inteligente de Evaluación Adaptativa del Comportamiento en Ciberseguridad #}
+{# Autor          : Alexis Villegas #}
+{# Fecha creación : 11-11-2026 #}
+{# Descripción    : Plantilla: correo de simulación abierto desde la bandeja. #}
+{# Modificaciones : #}
+{#   14-11-2026  Se agregó el encabezado de documentación. #}
+{# Notas          : Archivo original de Alexis Villegas; solo se agregó el encabezado. #}
+{# ====================================================================== #}
+{% extends "core/base.html" %}{% block title %}{{ sim.campana.asunto }}{% endblock %}
+{% block content %}
+<p><a href="{% url 'bandeja' %}">← Volver a la bandeja</a></p>
+<div class="card">
+<h1>{{ sim.campana.asunto }}</h1>
+<p class="mute small">De: {{ sim.campana.remitente }}<br>Para: {{ sim.usuario.email|default:sim.usuario.username }} · {{ sim.enviada|date:"d M Y H:i" }}</p>
+<hr style="border:0;border-top:1px solid var(--line)">
+<div>{{ cuerpo|urlize|linebreaksbr }}</div>
+<img src="{% url 'pixel' sim.token %}" width="1" height="1" alt="">
+</div>
+<a class="btn sec" href="{% url 'reportar' sim.token %}">Reportar como sospechoso</a>
+{% endblock %}

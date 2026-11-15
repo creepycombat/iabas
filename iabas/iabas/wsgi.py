@@ -1,9 +1,19 @@
+# =============================================================================
+# Archivo        : iabas/iabas/wsgi.py
+# Proyecto       : IABAS - Plataforma Inteligente de Evaluación Adaptativa del Comportamiento en Ciberseguridad
+# Autor          : Alexis Villegas
+# Fecha creación : 11-11-2026
+# Descripción    : Punto de entrada WSGI del proyecto.
+# Modificaciones :
+#   14-11-2026  Se agregó el encabezado de documentación y se tradujeron los comentarios al español.
+# Notas          : Archivo original de Alexis Villegas; solo se agregó el encabezado.
+# =============================================================================
 """
-WSGI config for iabas project.
+Configuración WSGI del proyecto IABAS.
 
-It exposes the WSGI callable as a module-level variable named ``application``.
+Expone el objeto WSGI como variable de módulo llamada ``application``.
 
-For more information on this file, see
+Más información sobre este archivo:
 https://docs.djangoproject.com/en/6.1/howto/deployment/wsgi/
 """
 

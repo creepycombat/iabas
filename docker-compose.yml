@@ -1,0 +1,58 @@
+# =============================================================================
+# Archivo        : docker-compose.yml
+# Proyecto       : IABAS - Plataforma Inteligente de Evaluación Adaptativa del Comportamiento en Ciberseguridad
+# Autor          : Marcelo Herquiñigo Vargas
+# Fecha creación : 12-11-2026
+# Descripción    : Entorno completo para la demo: aplicación web Django + servicio ML (sin MySQL ni Firebase).
+# Modificaciones :
+#   12-11-2026  Creación inicial.
+#   14-11-2026  Nuevas modificaciones o ajustes (revisión del encabezado y de los comentarios de documentación).
+# Notas          :
+#   - Uso: copiar .env.example a .env y ejecutar  docker compose up --build
+#   - web espera a que ml esté 'healthy' antes de partir.
+#   - Datos persistentes: volumen web_data (SQLite) y volumen ml_modelos (modelos entrenados).
+#   - Para empezar de cero:  docker compose down -v
+# =============================================================================
+services:
+  ml:
+    build: ./ml
+    environment:
+      ML_API_KEY: ${ML_API_KEY:-dev-ml-key}
+      ML_DIR_MODELOS: /app/modelos
+      ML_DATASET: /app/salida/dataset_entrenamiento.csv
+    ports:
+      - "8001:8001"
+    volumes:
+      - ml_modelos:/app/modelos
+      - ml_salida:/app/salida
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request;urllib.request.urlopen('http://localhost:8001/salud',timeout=3)"]
+      interval: 5s
+      timeout: 5s
+      retries: 40
+      start_period: 20s
+
+  web:
+    build: ./iabas
+    restart: on-failure
+    environment:
+      SECRET_KEY: ${SECRET_KEY:-clave-solo-para-demo-local-cambiar}
+      DEBUG: ${DEBUG:-0}
+      ALLOWED_HOSTS: ${ALLOWED_HOSTS:-127.0.0.1,localhost}
+      SITE_URL: ${SITE_URL:-http://localhost:8000}
+      DB_PATH: /data/db.sqlite3
+      ML_URL: http://ml:8001
+      ML_API_KEY: ${ML_API_KEY:-dev-ml-key}
+      SEED_DEMO: ${SEED_DEMO:-1}
+    depends_on:
+      ml:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    volumes:
+      - web_data:/data
+
+volumes:
+  web_data:
+  ml_modelos:
+  ml_salida:

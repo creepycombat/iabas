@@ -1,0 +1,15 @@
+# =============================================================================
+# Archivo        : ml/.dockerignore
+# Proyecto       : IABAS - Plataforma Inteligente de Evaluación Adaptativa del Comportamiento en Ciberseguridad
+# Autor          : Marcelo Herquiñigo Vargas
+# Fecha creación : 11-11-2026
+# Descripción    : Archivos que no se copian a la imagen Docker del servicio ML.
+# Modificaciones :
+#   11-11-2026  Creación inicial.
+#   14-11-2026  Se agregó el encabezado de documentación.
+# =============================================================================
+__pycache__/
+*.pyc
+.venv/
+salida/
+modelos/

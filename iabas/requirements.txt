@@ -1,0 +1,18 @@
+# =============================================================================
+# Archivo        : iabas/requirements.txt
+# Proyecto       : IABAS - Plataforma Inteligente de Evaluación Adaptativa del Comportamiento en Ciberseguridad
+# Autor          : Alexis Villegas
+# Fecha creación : 11-11-2026
+# Descripción    : Dependencias de la aplicación Django.
+# Modificaciones :
+#   12-11-2026  Versiones fijadas y retiro de streamlit, pandas y plotly (sin uso en la aplicación).
+#   14-11-2026  Se agregó el encabezado de documentación.
+# Notas          : Archivo original de Alexis Villegas. Las modificaciones fueron hechas por
+#                  Marcelo Herquiñigo Vargas al integrar el módulo de riesgo con ML.
+# =============================================================================
+Django==6.1.3
+requests==2.34.2
+whitenoise==6.12.0
+gunicorn==27.0.0
+pytest==9.2.0
+pytest-django==4.14.0

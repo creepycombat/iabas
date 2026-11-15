@@ -1,0 +1,56 @@
+{# ====================================================================== #}
+{# Archivo        : iabas/core/templates/core/riesgo.html #}
+{# Proyecto       : IABAS - Plataforma Inteligente de Evaluación Adaptativa del Comportamiento en Ciberseguridad #}
+{# Autor          : Marcelo Herquiñigo Vargas #}
+{# Fecha creación : 12-11-2026 #}
+{# Descripción    : Panel de riesgo: modelo vigente, niveles, riesgo por grupo y ranking de colaboradores. #}
+{# Modificaciones : #}
+{#   12-11-2026  Creación inicial. #}
+{#   14-11-2026  Nuevas modificaciones o ajustes (revisión del encabezado y de los comentarios de documentación). #}
+{# ====================================================================== #}
+{% extends "core/base.html" %}{% block title %}Riesgo · IABAS{% endblock %}
+{% comment %} Panel de riesgo (RF-06/07/08). Autor: Marcelo Herquiñigo Vargas · 12-11-2026 {% endcomment %}
+{% block content %}
+<p><a href="{% url 'panel' %}">← Campañas</a></p>
+<h1>Riesgo de phishing por usuario y grupo</h1>
+<p class="mute small">Datos simulados: el AUC refleja el generador de datos y no el comportamiento de una organización real.</p>
+
+<div class="card">
+<h2 style="margin-top:0">Modelo de Machine Learning</h2>
+{% if modelo and modelo.modelo %}
+<p><strong>v{{ modelo.modelo.version }}</strong> · {{ modelo.modelo.algoritmo }} · AUC {{ modelo.modelo.auc }}
+{% if modelo.modelo.cumple_meta %}<span class="tag ok">Cumple la meta (AUC ≥ 0,80)</span>{% else %}<span class="tag warn">No cumple la meta (AUC ≥ 0,80)</span>{% endif %}</p>
+{% elif modelo %}<p><span class="tag pend">El servicio ML no tiene modelo entrenado todavía</span></p>
+{% else %}<p><span class="tag warn">Servicio ML no disponible</span> Los puntajes no se pueden actualizar hasta que vuelva.</p>{% endif %}
+<div style="display:flex;gap:.6rem;flex-wrap:wrap">
+<form method="post" action="{% url 'riesgo_recalcular' %}">{% csrf_token %}<button class="btn">Recalcular riesgo ahora</button></form>
+<form method="post" action="{% url 'riesgo_reentrenar' %}">{% csrf_token %}<button class="btn sec">Reentrenar modelo con los datos de la plataforma</button></form>
+<a class="btn sec" href="{% url 'exportar_riesgo' %}">Exportar CSV</a></div>
+<p class="mute small" style="margin-bottom:0">El modelo solo se reemplaza si el reentrenamiento alcanza AUC ≥ 0,80 (Proceso 3).</p>
+</div>
+
+{% if r.total %}
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem">
+<div class="card"><span class="mute small">Riesgo alto</span><div style="font-size:2rem;font-weight:700;color:var(--red)">{{ r.niveles.alto }}</div></div>
+<div class="card"><span class="mute small">Riesgo medio</span><div style="font-size:2rem;font-weight:700;color:#9a6a12">{{ r.niveles.medio }}</div></div>
+<div class="card"><span class="mute small">Riesgo bajo</span><div style="font-size:2rem;font-weight:700;color:var(--green)">{{ r.niveles.bajo }}</div></div>
+</div>
+
+<div class="card"><h2 style="margin-top:0">Promedio por grupo</h2>
+{% for g in r.por_grupo %}<div style="display:flex;align-items:center;gap:.8rem;margin:.35rem 0">
+<div style="width:170px">{{ g.grupo }} <span class="mute small">({{ g.usuarios }})</span></div>
+<div style="flex:1;background:var(--line);border-radius:4px;height:14px"><div style="width:{{ g.medio|floatformat:0 }}%;background:var(--teal);height:14px;border-radius:4px"></div></div>
+<div style="width:50px;text-align:right">{{ g.medio }}</div></div>{% endfor %}</div>
+
+<div class="card"><h2 style="margin-top:0">Usuarios a priorizar (los 10 de mayor riesgo)</h2>
+<table><tr><th>Usuario</th><th>Grupo</th><th>Puntaje</th><th>Nivel</th><th>Cambio</th><th>Modelo</th></tr>
+{% for f in r.top %}<tr><td>{{ f.usuario.get_full_name|default:f.usuario.username }}</td><td>{{ f.grupo }}</td>
+<td><strong>{{ f.valor|floatformat:1 }}</strong></td>
+<td>{% if f.nivel == "alto" %}<span class="tag warn">Alto</span>{% elif f.nivel == "medio" %}<span class="tag pend">Medio</span>{% else %}<span class="tag ok">Bajo</span>{% endif %}</td>
+<td>{% if f.cambio is None %}–{% elif f.cambio > 0 %}<span style="color:var(--red)">▲ +{{ f.cambio }}</span>{% elif f.cambio < 0 %}<span style="color:var(--green)">▼ {{ f.cambio }}</span>{% else %}=
+{% endif %}</td><td class="mute small">{% if f.modelo %}v{{ f.modelo.version }}{% endif %}</td></tr>{% endfor %}</table>
+<p class="mute small" style="margin-bottom:0">Se muestra una parte para evitar ruido: el reforzamiento se prioriza en quienes están arriba.</p></div>
+{% else %}
+<div class="card"><p>Todavía no hay puntajes calculados. Pulsa <strong>Recalcular riesgo ahora</strong> (requiere campañas ejecutadas).</p></div>
+{% endif %}
+{% endblock %}
